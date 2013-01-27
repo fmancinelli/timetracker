@@ -100,13 +100,19 @@ const Indicator = new Lang.Class({
 	let item;
 	let totalTime = 0;
 
-	/* Compute the total time */
+	let wmClasses = [];
+
+	/* Compute the total time and sort WM class names */
 	for(wmClass in trackingData) {
 	    totalTime += trackingData[wmClass].time;
+	    wmClasses.push(wmClass);
 	}
 
+	wmClasses.sort();
+
 	/* Add a menu item for each tracked window */
-	for(wmClass in trackingData) {
+	for(let i = 0; i < wmClasses.length; i++) {
+	    let wmClass = wmClasses[i];
 	    let time = trackingData[wmClass].time;
 	    item = new PopupMenu.PopupMenuItem(wmClass +
 					       ': ' +
