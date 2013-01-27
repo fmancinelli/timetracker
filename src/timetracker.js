@@ -24,6 +24,7 @@ const PopupMenu = imports.ui.popupMenu;
 const St = imports.gi.St;
 const Shell = imports.gi.Shell;
 
+const Ui = Extension.imports.ui;
 const Utils = Extension.imports.utils;
 
 const TimeTracker = new Lang.Class({
@@ -114,12 +115,12 @@ const Indicator = new Lang.Class({
 	for(let i = 0; i < wmClasses.length; i++) {
 	    let wmClass = wmClasses[i];
 	    let time = trackingData[wmClass].time;
-	    item = new PopupMenu.PopupMenuItem(wmClass +
-					       ': ' +
-					       Math.round((time * 100) / totalTime) +
-					       '% (' +
-					       Utils.formatTime(time) +
-					       ')', { reactive: false });  	    
+	    item = new Ui.ApplicationInfoMenuItem(wmClass +
+						  ': ' +
+						  Math.round((time * 100) / totalTime) +
+						  '% (' +
+						  Utils.formatTime(time) +
+						  ')');  	    
 	    menuSection.addMenuItem(item);
 	}
 
