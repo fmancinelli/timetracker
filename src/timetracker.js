@@ -68,11 +68,10 @@ const Indicator = new Lang.Class({
 
 	/* Build the indicator UI */
 	let boxLayout = new St.BoxLayout();
-	let icon = new St.Icon({
-	    icon_name: 'system-run-symbolics',
-	    style_class: 'system-status-icon'
+	let label = new St.Label({
+	    text: 'Tt'
 	});
-	boxLayout.add(icon);
+	boxLayout.add(label);
 
 	this.actor.add_actor(boxLayout);
 
