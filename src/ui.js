@@ -21,14 +21,66 @@ const Lang = imports.lang;
 const PopupMenu = imports.ui.popupMenu;
 const St = imports.gi.St;
 
+const Utils = Extension.imports.utils;
+
 const ApplicationInfoMenuItem = new Lang.Class({
     Name: 'ApplicationInfoMenuItem',
     Extends: PopupMenu.PopupBaseMenuItem,
 
-    _init: function(text) {
+    _init: function(trackingData) {
 	this.parent({reactive: false});
 
-	let label = new St.Label({ text: text });
-	this.addActor(label);
+	let boxLayout = new St.BoxLayout();
+
+	let appNamesLayout = new St.BoxLayout({
+	    vertical: true,
+	    styleClass: 'application-names-box'
+	});
+
+	let appTimesLayout = new St.BoxLayout({
+	    vertical: true,
+	    styleClass: 'application-times-box'
+	});
+
+	let appPercentagesLayout = new St.BoxLayout({
+	    vertical: true,
+	    styleClass: 'application-percentages-box'
+	});
+	
+	let totalTime = 0;	
+	let wmClasses = [];
+
+	/* Compute the total time and sort WM class names */
+	for(wmClass in trackingData) {
+	    totalTime += trackingData[wmClass].time;
+	    wmClasses.push(wmClass);
+	}
+
+	wmClasses.sort();
+
+	for(let i = 0; i < wmClasses.length; i++) {
+	    let wmClass = wmClasses[i];
+	    
+	    let label = new St.Label({
+		text: wmClass
+	    });
+	    appNamesLayout.add(label);
+	
+	    label = new St.Label({
+		text: '(' + Utils.formatTime(trackingData[wmClass].time) + ')'
+	    });
+	    appTimesLayout.add(label);
+
+	    label = new St.Label({
+		text: Math.round((trackingData[wmClass].time * 100) / totalTime) + '%'
+	    });
+	    appPercentagesLayout.add(label);
+	}
+
+	boxLayout.add(appNamesLayout);
+	boxLayout.add(appPercentagesLayout);
+	boxLayout.add(appTimesLayout);
+	
+	this.addActor(boxLayout);
     }
 });

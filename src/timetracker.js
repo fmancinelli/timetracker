@@ -98,38 +98,20 @@ const Indicator = new Lang.Class({
 	menuSection.removeAll();
 
 	let trackingData = timeTracker.trackingData;
-	let item;
 	let totalTime = 0;
-
-	let wmClasses = [];
 
 	/* Compute the total time and sort WM class names */
 	for(wmClass in trackingData) {
 	    totalTime += trackingData[wmClass].time;
-	    wmClasses.push(wmClass);
 	}
 
-	wmClasses.sort();
-
-	/* Add a menu item for each tracked window */
-	for(let i = 0; i < wmClasses.length; i++) {
-	    let wmClass = wmClasses[i];
-	    let time = trackingData[wmClass].time;
-	    item = new Ui.ApplicationInfoMenuItem(wmClass +
-						  ': ' +
-						  Math.round((time * 100) / totalTime) +
-						  '% (' +
-						  Utils.formatTime(time) +
-						  ')');  	    
-	    menuSection.addMenuItem(item);
-	}
+	menuSection.addMenuItem(new Ui.ApplicationInfoMenuItem(trackingData));
 
 	/* Separator */
 	menuSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
 	/* Total time indicator */
-	item = new PopupMenu.PopupMenuItem('Total time: ' + Utils.formatTime(totalTime), { reactive: false });
-	menuSection.addMenuItem(item);
+	menuSection.addMenuItem(new PopupMenu.PopupMenuItem('Total time: ' + Utils.formatTime(totalTime), { reactive: false }));
     },
 
     _onDestroy: function() {
