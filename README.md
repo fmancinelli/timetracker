@@ -20,6 +20,9 @@ Time tracker is a [Gnome Shell](http://www.gnome.org/gnome-3/) extension that al
 
 ![Time tracker indicator](https://raw.github.com/fmancinelli/timetracker/master/images/indicator-menu.png)
 
+## Credits
+
+Thanks to Joern Konopka (https://plus.google.com/u/0/111311916570668380146/about) for contributing the nice icon!
 
 
 

@@ -24,8 +24,10 @@ const PopupMenu = imports.ui.popupMenu;
 const St = imports.gi.St;
 const Shell = imports.gi.Shell;
 
+const Constants = Extension.imports.constants;
 const Ui = Extension.imports.ui;
 const Utils = Extension.imports.utils;
+
 
 const TimeTracker = new Lang.Class({
     Name: 'Time tracker',    
@@ -68,10 +70,11 @@ const Indicator = new Lang.Class({
 
 	/* Build the indicator UI */
 	let boxLayout = new St.BoxLayout();
-	let label = new St.Label({
-	    text: 'Tt'
+	let icon = new St.Icon({
+	    gicon: Constants.timeTrackerGIcon,
+	    style_class: 'system-status-icon'
 	});
-	boxLayout.add(label);
+	boxLayout.add(icon);
 
 	this.actor.add_actor(boxLayout);
 
