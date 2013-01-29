@@ -28,27 +28,60 @@ const Constants = Extension.imports.constants;
 const Ui = Extension.imports.ui;
 const Utils = Extension.imports.utils;
 
+const TrackingDataStorage = new Lang.Class({
+    Name: 'Tracking data storage',
+
+    _init: function() {
+	this._trackingData = {};
+    },
+
+    track: function(name, seconds) {
+	if(this._trackingData[name]) {
+	    this._trackingData[name].time += seconds;
+	}
+	else {
+	    this._trackingData[name] = {
+		time: seconds
+	    }
+	}
+    },
+    
+    getTotalFocusTime: function() {
+	let totalTrackedTime = 0;
+	for(name in this._trackingData) {
+	    totalTrackedTime += this._trackingData[name].time;
+	}
+	
+	return totalTrackedTime;
+    },
+
+    getTrackedApplicationNames: function() {
+	let applicationNames = [];
+	for(name in this._trackingData) {
+	    applicationNames.push(name);
+	}
+
+	return applicationNames;   
+    },
+
+    getFocusTime: function(application) {
+	return this._trackingData[application].time;
+    }    
+});
 
 const TimeTracker = new Lang.Class({
     Name: 'Time tracker',    
 
-    _init: function() {
+    _init: function(trackingDataStorage) {
 	this._timeoutId = MainLoop.timeout_add(1000, Lang.bind(this, this._trackFocusWindow));
 	
-	this.trackingData = {};
+	this._trackingDataStorage = trackingDataStorage;
     },
 
     _trackFocusWindow: function() {
 	let focusWindow =  global.screen.get_display().focus_window;
-	if(focusWindow) {	    
-	    if(this.trackingData[focusWindow.get_wm_class()]) {
-		this.trackingData[focusWindow.get_wm_class()].time++;
-	    }
-	    else {
-		this.trackingData[focusWindow.get_wm_class()] = {
-		    time: 1
-		};
-	    }
+	if(focusWindow) {
+	    this._trackingDataStorage.track(focusWindow.get_wm_class(), 1);
 	}
 
 	return true;
@@ -65,7 +98,7 @@ const Indicator = new Lang.Class({
     Name: 'Time tracker indicator',
     Extends: PanelMenu.Button,
 
-    _init: function() {
+    _init: function(trackingDataStorage) {
 	this.parent(St.Align.START);
 
 	/* Build the indicator UI */
@@ -84,36 +117,28 @@ const Indicator = new Lang.Class({
 
 	this.menu.connect('open-state-changed', Lang.bind(this, function(menu) {
 	    if(menu.isOpen) {
-		this._rebuildApplicationList(applicationList, this._timeTracker);
+		this._rebuildApplicationList(applicationList, trackingDataStorage);
 	    }
 	}));
 
 	/* Time tracker */
-	this._timeTracker = new TimeTracker();
+	this._timeTracker = new TimeTracker(trackingDataStorage);
 
 	/* Handle the destroy signal */
 	this.connect('destroy', Lang.bind(this, this._onDestroy));	
     },
 
-    _rebuildApplicationList: function(menuSection, timeTracker) {
+    _rebuildApplicationList: function(menuSection, trackingDataStorage) {
 	/* Remove all the items */
 	menuSection.removeAll();
 
-	let trackingData = timeTracker.trackingData;
-	let totalTime = 0;
-
-	/* Compute the total time and sort WM class names */
-	for(wmClass in trackingData) {
-	    totalTime += trackingData[wmClass].time;
-	}
-
-	menuSection.addMenuItem(new Ui.ApplicationInfoMenuItem(trackingData));
+	menuSection.addMenuItem(new Ui.ApplicationInfoMenuItem(trackingDataStorage));
 
 	/* Separator */
 	menuSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
 	/* Total time indicator */
-	menuSection.addMenuItem(new PopupMenu.PopupMenuItem('Total time: ' + Utils.formatTime(totalTime), { reactive: false }));
+	menuSection.addMenuItem(new PopupMenu.PopupMenuItem('Total time: ' + Utils.formatTime(trackingDataStorage.getTotalFocusTime()), { reactive: false }));
     },
 
     _onDestroy: function() {

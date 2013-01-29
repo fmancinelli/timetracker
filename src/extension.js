@@ -23,14 +23,17 @@ const St = imports.gi.St;
 
 const TimeTracker = Extension.imports.timetracker;
 
+let trackingDataStorage;
 let timeTrackerIndicator;
 
-function init() {   
+
+function init() {
+    trackingDataStorage = new TimeTracker.TrackingDataStorage();
 }
 
 function enable() {
     if(!timeTrackerIndicator) {
-	timeTrackerIndicator = new TimeTracker.Indicator();
+	timeTrackerIndicator = new TimeTracker.Indicator(trackingDataStorage);
 	Main.panel.addToStatusArea('timetracker', timeTrackerIndicator);
     }  
 }

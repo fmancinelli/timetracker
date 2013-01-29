@@ -27,7 +27,7 @@ const ApplicationInfoMenuItem = new Lang.Class({
     Name: 'ApplicationInfoMenuItem',
     Extends: PopupMenu.PopupBaseMenuItem,
 
-    _init: function(trackingData) {
+    _init: function(trackingDataStorage) {
 	this.parent({reactive: false});
 
 	let boxLayout = new St.BoxLayout();
@@ -47,32 +47,26 @@ const ApplicationInfoMenuItem = new Lang.Class({
 	    styleClass: 'application-percentages-box'
 	});
 	
-	let totalTime = 0;	
-	let wmClasses = [];
+	let totalFocusTime = trackingDataStorage.getTotalFocusTime();
+	
+	let applicationNames = trackingDataStorage.getTrackedApplicationNames();
+	applicationNames.sort();
 
-	/* Compute the total time and sort WM class names */
-	for(wmClass in trackingData) {
-	    totalTime += trackingData[wmClass].time;
-	    wmClasses.push(wmClass);
-	}
-
-	wmClasses.sort();
-
-	for(let i = 0; i < wmClasses.length; i++) {
-	    let wmClass = wmClasses[i];
+	for(let i = 0; i < applicationNames.length; i++) {
+	    let applicationName = applicationNames[i];
 	    
 	    let label = new St.Label({
-		text: wmClass
+		text: applicationName
 	    });
 	    appNamesLayout.add(label);
 	
 	    label = new St.Label({
-		text: '(' + Utils.formatTime(trackingData[wmClass].time) + ')'
+		text: '(' + Utils.formatTime(trackingDataStorage.getFocusTime(applicationName)) + ')'
 	    });
 	    appTimesLayout.add(label);
 
 	    label = new St.Label({
-		text: Math.round((trackingData[wmClass].time * 100) / totalTime) + '%'
+		text: Math.round((trackingDataStorage.getFocusTime(applicationName) * 100) / totalFocusTime) + '%'
 	    });
 	    appPercentagesLayout.add(label);
 	}
