@@ -24,6 +24,17 @@ Time tracker is a [Gnome Shell](http://www.gnome.org/gnome-3/) extension that al
 
 Thanks to Joern Konopka (https://plus.google.com/u/0/111311916570668380146/about) for contributing the nice icon!
 
+## Changelog
+
+* **Current**
+
+  Make tracked data persistent (no reset when screen is locked)
+
+* **Version 1.0**
+
+  Initial release
+
+
 
 
 
