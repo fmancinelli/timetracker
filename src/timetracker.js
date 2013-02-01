@@ -66,7 +66,11 @@ const TrackingDataStorage = new Lang.Class({
 
     getFocusTime: function(application) {
 	return this._trackingData[application].time;
-    }    
+    },
+
+    reset: function() {
+	this._trackingData = {};
+    }
 });
 
 const TimeTracker = new Lang.Class({
@@ -91,7 +95,11 @@ const TimeTracker = new Lang.Class({
 	if(this._timeoutId) {
 	    MainLoop.source_remove(this._timeoutId);
 	}
-    }    
+    },
+
+    reset: function() {
+	this._trackingDataStorage.reset();
+    }
 });
 
 const Indicator = new Lang.Class({
@@ -139,11 +147,18 @@ const Indicator = new Lang.Class({
 
 	/* Total time indicator */
 	menuSection.addMenuItem(new PopupMenu.PopupMenuItem('Total time: ' + Utils.formatTime(trackingDataStorage.getTotalFocusTime()), { reactive: false }));
+
+	/* Separator */
+	menuSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+	let resetMenuItem = new PopupMenu.PopupMenuItem('Reset');
+	resetMenuItem.connect('activate', Lang.bind(this, function() {
+	    this._timeTracker.reset();
+	}));
+	menuSection.addMenuItem(resetMenuItem);
     },
 
     _onDestroy: function() {
 	this._timeTracker.destroy();
     }    
 });
-
-
